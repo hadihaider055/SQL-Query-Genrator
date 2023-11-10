@@ -4,7 +4,7 @@
 use std::env;
 
 use dotenv::dotenv;
-use reqwest::Body;
+use reqwest::{header, Body};
 use serde_derive::{Deserialize, Serialize};
 use std::error::Error;
 
@@ -16,34 +16,33 @@ struct OpenAIChoices {
     finish_reason: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct OpenAIResponse {
-    id: String,
-    choices: Vec<OpenAIChoices>,
-    object: Option<String>,
-    created: Option<u64>,
-    model: Option<String>,
+    prompt: String,
+    max_tokens: u16,
+    result: Result<String, String>,
 }
 
 #[derive(Debug, Serialize)]
 struct OpenAIRequest {
     prompt: String,
     max_tokens: u16,
-    result: Result<(), String>,
 }
 
 #[tauri::command]
-async fn generate_query() -> OpenAIRequest {
+async fn generate_query(user_text: String) -> OpenAIResponse {
     let preamble = "Generate a Sql code for the given statement";
 
     println!("{esc}c", esc = 27 as char);
 
-    let result = match do_generate_query().await {
-        Ok(_) => Ok(()),
+    let result = match do_generate_query(user_text).await {
+        Ok(data) => Ok(data),
         Err(err) => Err(err.to_string()),
     };
 
-    let oai_request = OpenAIRequest {
+    println!("oai_request: {:?}", result);
+
+    let oai_request = OpenAIResponse {
         prompt: format!("{} {}", preamble, "Get employees data from employees table"),
         max_tokens: 1000,
         result,
@@ -52,24 +51,18 @@ async fn generate_query() -> OpenAIRequest {
     oai_request
 }
 
-async fn do_generate_query() -> Result<(), Box<dyn std::error::Error>> {
+async fn do_generate_query(user_text: String) -> Result<String, Box<dyn Error>> {
     let url = "https://api.openai.com/v1/engines/text-davinci-001/completions";
     let preamble = "Generate a Sql code for the given statement";
-    let oai_token: String = match env::var("OAI_TOKEN") {
-        Ok(token) => token,
-        Err(_) => {
-            eprintln!("Error: OAI_TOKEN not found in environment");
-            return Ok(());
-        }
-    };
+
+    let oai_token = "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";
     let auth_header_val = format!("Bearer {}", oai_token);
 
     println!("{esc}c", esc = 27 as char);
 
     let oai_request = OpenAIRequest {
-        prompt: format!("{} {}", preamble, "Get employees data from employees table"),
+        prompt: format!("{} {}", preamble, user_text),
         max_tokens: 1000,
-        result: Ok(()),
     };
 
     let body = Body::from(serde_json::to_vec(&oai_request)?);
@@ -79,15 +72,19 @@ async fn do_generate_query() -> Result<(), Box<dyn std::error::Error>> {
     let res = client
         .post(url)
         .body(body)
-        .header("Authorization", auth_header_val)
-        .header("Content-Type", "application/json")
+        .header(header::AUTHORIZATION, auth_header_val)
+        .header(header::CONTENT_TYPE, "application/json")
         .send()
-        .await;
+        .await?;
 
-    println!("res {:?}", res);
-
-    res?;
-    Ok(())
+    if res.status().is_success() {
+        let body_text = res.text().await?;
+        println!("Response Body: {}", body_text);
+        Ok(body_text)
+    } else {
+        // Provide an error message for non-successful status codes
+        Err(format!("Request failed with status code: {}", res.status()).into())
+    }
 }
 
 fn main() {
