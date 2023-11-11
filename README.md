@@ -2,6 +2,7 @@
 
 ### Developed a Query Generator using Tauri, Rust, Next.js. This application fetches the SQL queries from OpenAI's API and then render that on frontend
 
-![image](https://github.com/hadihaider055/SQL-Query-Genrator/assets/84828930/1e769af6-8fa9-4129-87e1-e5e9ffa01a00)
-![image](https://github.com/hadihaider055/SQL-Query-Genrator/assets/84828930/b038d24e-9853-4353-b506-e3fe03a561ad)
-![image](https://github.com/hadihaider055/SQL-Query-Genrator/assets/84828930/c529fc1a-ca27-4c36-890d-b651b536cb8b)
+
+![sql-query-genrator](https://github.com/hadihaider055/SQL-Query-Genrator/assets/84828930/818ff87d-89a2-4978-a260-19a4e800801c)
+![sql-query-genrator-searching](https://github.com/hadihaider055/SQL-Query-Genrator/assets/84828930/3ff19504-ca4d-467d-89b8-f326c917a6e7)
+![sql-query-genrator-result](https://github.com/hadihaider055/SQL-Query-Genrator/assets/84828930/902b6996-e9e7-446d-b6ad-61218ba66466)
