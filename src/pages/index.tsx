@@ -8,7 +8,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 // React Syntax Highlighter
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { darcula } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 // Sweet Alert
 import Swal from "sweetalert2";
@@ -80,10 +80,16 @@ export default function Home() {
               disabled={isLoading}
             />
             <button
-              className="bg-slate-900 text-white w-full p-3 rounded-md outline-none hover:bg-slate-950 transition-all ease-in-out duration-500 disabled:cursor-not-allowed disabled:opacity-80"
+              className="bg-slate-900 text-white w-full p-3 rounded-md outline-none hover:bg-slate-950 transition-all ease-in-out duration-500 disabled:cursor-not-allowed disabled:opacity-80 flex items-center justify-center gap-1"
               disabled={isLoading}
             >
-              {isLoading ? "Searching" : "Search"}
+              {isLoading ? (
+                <>
+                  Searching <img src="/images/loader.gif" className="w-7" />
+                </>
+              ) : (
+                "Search"
+              )}
             </button>
           </form>
         </article>

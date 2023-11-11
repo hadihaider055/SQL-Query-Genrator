@@ -55,8 +55,12 @@ async fn do_generate_query(user_text: String) -> Result<String, Box<dyn Error>> 
     let url = "https://api.openai.com/v1/engines/text-davinci-001/completions";
     let preamble = "Generate a Sql code for the given statement";
 
-    let oai_token = "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";
-    let auth_header_val = format!("Bearer {}", oai_token);
+    let oai_token = match env::var("OAI_TOKEN") {
+        Ok(token) => Ok(token),
+        Err(_) => Err("Error: OAI_TOKEN not found in environment"),
+    };
+
+    let auth_header_val = format!("Bearer {}", oai_token?);
 
     println!("{esc}c", esc = 27 as char);
 
