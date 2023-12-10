@@ -37,4 +37,4 @@ OR
 
 If you have any feedback, please reach out to [me](https://linkedin.com/in/hadi-haider) or you can create the issue.
 
-<p align="center">Made with ❤️ by Hadi Haider</p>
+**<p align="center" style="font-weight:700;">Made with ❤️ by Hadi Haider</p>**
